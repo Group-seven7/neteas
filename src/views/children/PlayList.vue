@@ -35,14 +35,22 @@ import BetterScroll from "@/components/BetterScroll.vue";
 import Wrapper from "@/components/Wrapper.vue";
 
 const props = defineProps({
-  data: {},
+  data: {
+     type: Array,
+    required: true,
+  },
 });
 const router = useRouter();
 
 const clickHandler = (item) => {
-  if (item.id) {
-    router.push({ name: "GeDan", params: { id: item.id } });
-  }
+  // 跳转到播放新歌曲页面，并传递 id
+  router.push({ path: "/songlist", query: { a: item.id } })
+   .then(() => {
+      console.log("Navigation successful");
+    })
+    .catch(err => {
+      console.error("Navigation error:", err);
+    });
 };
 const moreHandler = () => {
   console.log("推荐歌单的更多被点击了");

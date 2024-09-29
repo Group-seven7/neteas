@@ -1,3 +1,5 @@
+const { config } = require("localforage");
+
 module.exports = {
   env: {
     browser: true,
@@ -24,9 +26,14 @@ module.exports = {
     quotes: ["error", "double"],
     "import/no-extraneous-dependencies": "off",
     "vue/multi-word-component-names": "off",
+    "arrow-body-style": ["off"],
+    "no-console": "off",
   },
   settings: {
     "import/resolver": {
+      // "vite":{
+      //   "config":"vite.config.js"
+      // },
       alias: {
         map: [["@", "./src"]],
         extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
@@ -34,3 +41,4 @@ module.exports = {
     },
   },
 };
+

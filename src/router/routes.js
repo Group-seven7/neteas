@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "@/views/HomePage.vue";
+import songlist from "@/views/playlist/songlist.vue";
 
 // 定义路由配置数组
 const routes = [
@@ -7,6 +8,11 @@ const routes = [
     path: "/",
     name: "Home",
     component: HomePage,
+  },
+  {
+    path:"/songlist",
+    name:"songlist",
+    component:songlist
   },
 ];
 

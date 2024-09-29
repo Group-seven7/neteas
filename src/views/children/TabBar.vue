@@ -40,7 +40,7 @@ import { Icon } from "@iconify/vue";
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 50px; /* 紧贴底部 */
+  bottom: 0; /* 紧贴底部 */
   background-color: white;
   z-index: 1000; /* 确保在页面内容上方 */
 }
