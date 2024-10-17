@@ -1,6 +1,48 @@
 import request from "@/api/request";
 import { data } from "autoprefixer";
+
 import to from "await-to-js";
+
+// banner
+/*
+说明 : 调用此接口 , 可获取 banner( 轮播图 ) 数据
+可选参数 :
+type:资源类型,对应以下类型,默认为 0 即 PC
+0: pc
+1: android
+2: iphone
+3: ipad
+接口地址 : /banner
+调用例子 : /banner, /banner?type=2
+*/
+// export const getBannerImage = async (type=2) => {
+//   const [error, res] = await to(request.post("/banner"),{
+//     type
+//   });
+//   if (error) return console.log(`请求出错:${ error}`);
+//   return res.data;
+// };
+export const getBannerImage = async (data) => {
+  const [error, res] = await to(
+    request.post(`/banner?timestamp=${data.timestamp}&cookie=${data.cookie}`)
+  );
+  if (error) return console.log("请求出错:" + error);
+  return res.data;
+};
+/*
+首页-发现-圆形图标入口列表
+说明 : 调用此接口 , 可获取 APP 首页圆形图标入口列表
+接口地址 : /homepage/dragon/ball
+*/
+export const getDragonBall = async (data) => {
+  const [error, res] = await to(
+    request.post(
+      `/homepage/dragon/ball?timestamp=${data.timestamp}&cookie=${data.cookie}`
+    )
+  );
+  if (error) return console.log("请求出错:" + error);
+  return res.data;
+};
 
 // 搜索
 /* 
@@ -68,11 +110,18 @@ export const getSongDetail = (id) => {
     },
   });
 };
-// export const getSongDetail = async (data) => {
-//   const [error, res] = await to(request.post("/playlist/detail"), data);
-//   if (error) return console.log("请求出错！");
-//   return res.data;
-// };
+// 游客登入/立即体验
+//  直接调用此接口, 可获取游客cookie,如果遇到其他接口未登录状态报400状态码需要验证的错误,可使用此接口获取游客cookie避免报错
+export const Swingvister = (cookie)=>{
+  return request.get("/register/anonimous",{
+    params:{
+      cookie,
+    }
+  }).then(res=>{
+    return res.data
+  })
+}
+
 // 默认搜索关键词
 /* 
 说明 : 调用此接口 , 可获取默认搜索关键词
@@ -90,11 +139,11 @@ phone: 手机号码
 password: 密码
 调用例子: /login/cellphone ? phone = xxx & password=yyy / login / cellphone ? phone = xxx & md5_password=yyy / login / cellphone ? phone = xxx & captcha=1234
 */
-export const verify = (phone, password) => {
+export const verify = (phone, captcha) => {
   return request.get("/login/cellphone", {
     params: {
       phone,
-      password,
+      captcha,
     },
   });
 };
@@ -156,9 +205,21 @@ export const sendValidateCode = async (phone, ctcode = 86) => {
 接口地址 : /captcha/verify
 调用例子 : /captcha/verify?phone=13xxx&captcha=1597
 */
-export const verifyCaptcha = async (data) => {
-  const [error, res] = await to(request.post("/captcha/verify"), data);
-  if (error) return console.log("请求出错！");
+
+// 验证验证码
+export const verifyCaptcha = async (phone, captcha, ctcode = 86) => {
+  const data = {
+    phone,
+    captcha,
+    ctcode,
+  };
+
+  const [error, res] = await to(request.post("/captcha/verify", data));
+  if (error) {
+    console.error("请求出错！", error);
+    return null; // 可以根据需要返回错误信息或处理
+  }
+
   return res.data;
 };
 
@@ -282,45 +343,29 @@ export const refreshLoginStatus = async (data) => {
   if (error) return console.log("请求出错！");
   return res.data;
 };
-// 获取用户详情
-// 说明 : 登录后调用此接口 , 传入用户 id, 可以获取用户详情
 
-// 必选参数 : uid : 用户 id
+// 调用此接口,可获取登录状态
+export const getLoginStatus = async (cookie) => {
+  try {
+    const res = await request.post("/login/status", {
+      cookie, 
+    });
 
-// 接口地址 : /user/detail
-
-// 调用例子 : /user/detail?uid=32953014
-
-// 获取账号信息
-// 说明 : 登录后调用此接口 ,可获取用户账号信息
-
-// 接口地址 : /user/account
-
-// 调用例子 : /user/account
-
-// export const GetScanKey = async (time) => {
-//   return axios.get("http://localhost:3000/login/qr/key", {
-//     params: {
-//       timestamp: time,
-//     },
-//   });
-// };
-// 将key作为参数，获取二维码base64
-// export const Scan = (key, time) => {
-//   return axios.get("http://localhost:3000/login/qr/create", {
-//     params: {
-//       qrimg: true,
-//       key,
-//     },
-//   });
-// };
-// 获取二维码状态
-// export const QrCodeStatus = (key, time) => {
-//   return axios.get("http://localhost:3000/login/qr/check", {
-//     params: {
-//       key,
-//       timestamp: time,
-//     },
-//   });
-// };
-// 验证账号密码
+    // 返回 API 响应数据
+    return res.data;
+  } catch (error) {
+    console.error("获取登录状态出错:", error);
+    return null; // 返回 null 以便上层调用
+  }
+};
+// 退出登入
+export const getLogout = async () => {
+  try {
+    const response = await request.post("/logout", {});
+    return response.data; // 返回响应数据
+  } catch (error) {
+    console.error("登出失败:", error); // 错误处理
+    throw error; // 重新抛出错误，便于调用者处理
+  }
+};
+ 

@@ -67,6 +67,7 @@
         round
         hairline
         class="bg-red-600 text-white font-semibold w-3/5"
+        @click="SWingTrous"
       >
         立即体验
       </van-button>
@@ -123,14 +124,28 @@
 </template>
 
 <script setup>
+import { Swingvister } from "@/api";
+import { useUserStore } from "@/store";
 import { ref } from "vue";
 import { Icon } from "@iconify/vue";
 import { useRouter } from "vue-router";
 // import Phonesample from "./phonesample.vue";
 
+const countStore = useUserStore();
 const router = useRouter();
 const checked = ref(false);
 const showCenter = ref(false);
+const SWingTrous=async()=>{
+  try {
+    const res = await Swingvister();
+    countStore.setUserInfo(res,res.cookie);
+    console.log(res);
+    router.push("/");
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 
 const CheckedStatus = () => {
   // console.log(checked.value);

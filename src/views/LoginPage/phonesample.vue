@@ -14,7 +14,7 @@
           @click="back"
         />
       </div>
-      <a href="#" class="text-gray-500 text-sm absolute right-4">游客登录</a>
+      <a href="#" class="text-gray-500 text-sm absolute right-4" @click="back">游客登录</a>
     </header>
     <div>
       <span class="text-lg font-semibold text-gray-700">网易云音乐</span>
@@ -42,29 +42,31 @@ import { ref } from "vue";
 import { Icon } from "@iconify/vue";
 import { getQRCoderKey, createQR, checkQRStatus } from "@/api";
 import { useRouter } from "vue-router";
+import { useUserStore } from "@/store"; // 引入 Pinia 的 userStore
 
 const router = useRouter();
 const key = ref("");
 const img = ref("");
 const status = ref("");
 const loading = ref(false);
+const userStore = useUserStore(); // 使用 Pinia store
 
 // 生成二维码
 const generateQR = async () => {
-  loading.value = true; // 设置加载状态
+  loading.value = true;
   try {
     const keyResponse = await getQRCoderKey();
-    key.value = keyResponse.data.unikey; // 适应返回的数据结构
+    key.value = keyResponse.data.unikey;
 
     const qrResponse = await createQR(key.value);
-    img.value = qrResponse.data.qrimg; // 获取 QR 图片
+    img.value = qrResponse.data.qrimg;
     status.value = "请扫描二维码以登录";
 
-    pollQRStatus(); // 开始轮询状态
+    pollQRStatus();
   } catch (error) {
-    console.error(error.message); // 输出错误信息
+    console.error(error.message);
   } finally {
-    loading.value = false; // 清除加载状态
+    loading.value = false;
   }
 };
 
@@ -73,29 +75,30 @@ const pollQRStatus = () => {
   const intervalId = setInterval(async () => {
     try {
       const statusResponse = await checkQRStatus(key.value);
-      console.log(statusResponse); // 打印所有返回数据，调试用
       if (statusResponse.code === 803) {
-        clearInterval(intervalId); // 登录成功，停止轮询
-        status.value = "登录成功！"; // 显示登录成功的信息
+        clearInterval(intervalId);
+        status.value = "登录成功！";
+        
+        console.log("Login success, user data:", statusResponse);
+        console.log("Status response:", statusResponse);
+        
+        const userInfo = statusResponse; // 登录成功后的用户数据
+        const {cookie} = statusResponse; // 登录成功后的 cookie
+        saveUserData(userInfo, cookie); // 保存用户数据和 cookie
 
-        // 假设 statusResponse.data 返回了用户的相关信息
-        const userData = statusResponse.data; // 示例数据
-        saveUserData(userData); // 将用户数据存储到 localStorage
-
-        // 处理登录成功后的逻辑，比如跳转页面
-        router.push("/"); // 登录成功后跳转到主页
+        router.push("/");
       } else {
-        status.value = getStatusMessage(statusResponse.code); // 更新状态信息
+        status.value = getStatusMessage(statusResponse.code);
       }
     } catch (error) {
-      console.error(error.message); // 输出错误信息
+      console.error(error.message);
     }
-  }, 2000); // 每 2 秒轮询一次
+  }, 2000);
 };
 
-// 保存用户数据到 localStorage
-const saveUserData = (userData) => {
-  localStorage.setItem("user", JSON.stringify(userData));
+// 保存用户数据和 cookie 到 Pinia 和 localforage
+const saveUserData = (userInfo, cookie) => {
+  userStore.setUserInfo(userInfo, cookie); // 存储用户信息和 cookie
 };
 
 // 处理状态码，返回友好的提示
@@ -116,3 +119,4 @@ const back = () => {
   router.back();
 };
 </script>
+

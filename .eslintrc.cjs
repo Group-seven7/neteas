@@ -28,6 +28,7 @@ module.exports = {
     "vue/multi-word-component-names": "off",
     "arrow-body-style": ["off"],
     "no-console": "off",
+    "import/prefer-default-export": "off",
   },
   settings: {
     "import/resolver": {

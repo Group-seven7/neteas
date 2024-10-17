@@ -13,16 +13,16 @@
         <span class="m-3 text-[4vw] text-[#676c6c]">博客</span>
       </div>
       <div class="flex flex-col items-center w-[15vw]">
-        <Icon icon="mingcute:music-line" class="w-[9vw] h-[9vw] filter" />
-        <span class="m-3 text-[4vw] text-[#676c6c]">我的</span>
-      </div>
-      <div class="flex flex-col items-center w-[15vw]">
         <Icon icon="ic:baseline-group" class="w-[9vw] h-[9vw] filter" />
         <span class="m-3 text-[4vw] text-[#676c6c]">关注</span>
       </div>
       <div class="flex flex-col items-center w-[15vw]">
         <Icon icon="basil:comment-solid" class="w-[9vw] h-[9vw] filter" />
         <span class="m-3 text-[4vw] text-[#676c6c]">社区</span>
+      </div>
+      <div class="flex flex-col items-center w-[15vw]">
+        <Icon icon="mingcute:music-line" class="w-[9vw] h-[9vw] filter" />
+        <span class="m-3 text-[4vw] text-[#676c6c]">我的</span>
       </div>
     </div>
   </div>
